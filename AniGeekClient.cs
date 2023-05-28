@@ -58,5 +58,13 @@ namespace AniGeekAPI
             var products = ((JArray)answer.other).ToObject<List<Product>>();
             return products;
         }
+        public async Task<Product?> GetProductAsync(int id)
+        {
+            var answer = await RequestManager.RequestAsync($"type=list_product&product_id={id}");
+            if (answer == null) return null;
+
+            var product = ((JArray)answer.other).ToObject<List<Product>>()?.First();
+            return product;
+        }
     }
 }
