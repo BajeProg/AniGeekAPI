@@ -25,6 +25,21 @@ namespace AniGeekAPI
         /// <summary>
         /// Вход в аккаунт
         /// </summary>
+        /// <param name="username">Логин пользователя</param>
+        /// <param name="password">Пароль пользователя</param>
+        /// /// <param name="session">ID текущей сессии</param>
+        /// <returns>В случае успешного входа возвращается User. В противном случае null</returns>
+        public async Task<User?> LoginAsync(string username, string password, string session)
+        {
+            var answer = await RequestManager.RequestAsync($"type=auth_user&login={username}&pass={password}&session={session}");
+
+            if (answer == null) return null;
+            return await LoginAsync((string)answer.other);
+        }
+
+        /// <summary>
+        /// Вход в аккаунт
+        /// </summary>
         /// <param name="session">ID сессии</param>
         /// <returns>В случае успешного входа возвращается User. В противном случае null</returns>
         public async Task<User?> LoginAsync(string session)
@@ -32,7 +47,7 @@ namespace AniGeekAPI
             var answer = await RequestManager.RequestAsync($"type=enter_session&session_token={session}");
             if (answer == null) return null;
 
-            var user = JsonConvert.DeserializeObject<User>((string)answer.other);
+            var user = ((JObject)answer.other).ToObject<User?>();
             return user;
         }
 
